@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Produit, Client, Vente, Categorie, Dashboard, StatutVente } from '../models/models';
 
-const BASE = 'http://localhost:8080/api';
+const BASE = 'http://localhost:8085/api';
 
 @Injectable({ providedIn: 'root' })
 export class ProduitService {

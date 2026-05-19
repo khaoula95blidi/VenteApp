@@ -64,7 +64,7 @@ import { Vente, Client, Produit, LigneVente, StatutVente, ModePaiement } from '.
                   <td style="font-size:12px;color:var(--text-muted)">
                     {{ v.dateVente | date:'dd/MM/yyyy HH:mm':'':'fr' }}
                   </td>
-                  <td style="font-size:13px">{{ v.lignes?.length || 0 }} article(s)</td>
+                  <td style="font-size:13px">{{ v.lignes.length || 0 }} article(s)</td>
                   <td style="font-weight:700;font-size:14px;color:var(--accent)">
                     {{ v.totalTtc | currency:'TND':'symbol':'1.3-3':'fr' }}
                   </td>
@@ -177,11 +177,11 @@ import { Vente, Client, Produit, LigneVente, StatutVente, ModePaiement } from '.
                 </div>
               }
 
-              @for (ligne of lignes(); track $index; let i = $index) {
+              @for (ligne of lignes(); track $index) {
                 <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:10px;align-items:end;margin-bottom:10px;background:var(--bg);padding:12px;border-radius:8px">
                   <div class="form-group" style="margin:0">
                     <label style="font-size:10px">Produit *</label>
-                    <select [(ngModel)]="lignes()[i].produitId" (change)="onProduitChange(i)" style="width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;outline:none">
+                    <select [(ngModel)]="ligne.produitId" (change)="onProduitChange($index)" style="width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;outline:none">
                       <option [value]="0">— Sélectionner —</option>
                       @for (p of produits(); track p.id) {
                         <option [value]="p.id">{{ p.nom }} (Stock: {{ p.stock }})</option>
@@ -190,20 +190,20 @@ import { Vente, Client, Produit, LigneVente, StatutVente, ModePaiement } from '.
                   </div>
                   <div class="form-group" style="margin:0">
                     <label style="font-size:10px">Qté *</label>
-                    <input type="number" [(ngModel)]="lignes()[i].quantite" (input)="recalcTotal()" min="1"
+                    <input type="number" [(ngModel)]="ligne.quantite" (input)="recalcTotal()" min="1"
                       style="width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;outline:none">
                   </div>
                   <div class="form-group" style="margin:0">
                     <label style="font-size:10px">Prix unitaire</label>
-                    <input type="number" [(ngModel)]="lignes()[i].prixUnitaire" (input)="recalcTotal()" step="0.001"
+                    <input type="number" [(ngModel)]="ligne.prixUnitaire" (input)="recalcTotal()" step="0.001"
                       style="width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;outline:none">
                   </div>
                   <div class="form-group" style="margin:0">
                     <label style="font-size:10px">Remise %</label>
-                    <input type="number" [(ngModel)]="lignes()[i].remise" (input)="recalcTotal()" min="0" max="100"
+                    <input type="number" [(ngModel)]="ligne.remise" (input)="recalcTotal()" min="0" max="100"
                       style="width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;outline:none">
                   </div>
-                  <button class="btn btn-danger btn-sm" (click)="removeLigne(i)" style="margin-bottom:0">
+                  <button class="btn btn-danger btn-sm" (click)="removeLigne($index)" style="margin-bottom:0">
                     <span class="material-icons" style="font-size:14px">delete</span>
                   </button>
                 </div>
