@@ -19,6 +19,8 @@ export interface AuthResponse {
   email: string;
   fullName: string;
   role: string;
+  vendorStatus?: string;
+  companyName?: string;
 }
 
 export interface CurrentUser {
@@ -27,6 +29,23 @@ export interface CurrentUser {
   fullName: string;
   role: string;
   token: string;
+  vendorStatus?: string;
+  companyName?: string;
+}
+
+export interface VendorRegisterRequest {
+  username: string;
+  email: string;
+  password: string;
+  fullName: string;
+  companyName: string;
+}
+
+export interface ClientRegisterRequest {
+  username: string;
+  email: string;
+  password: string;
+  fullName: string;
 }
 
 // src/app/core/models/produit.models.ts
@@ -121,4 +140,101 @@ export interface StatsMois {
   mois: number;
   nomMois: string;
   total: number;
+}
+
+// ===== MARKETPLACE MODELS =====
+
+export type VendorStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
+export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+export type NotificationType = 'LOW_STOCK_ALERT' | 'ORDER_RECEIVED' | 'ORDER_UPDATED' | 'VENDOR_APPROVED' | 'VENDOR_REJECTED';
+
+export interface Vendor {
+  id?: number;
+  username: string;
+  email: string;
+  fullName: string;
+  companyName: string;
+  vendorStatus?: VendorStatus;
+  registeredAt?: string;
+  totalProducts?: number;
+  totalOrders?: number;
+  totalRevenue?: number;
+}
+
+export interface Order {
+  id?: number;
+  orderNumber: string;
+  clientId: number;
+  vendorId: number;
+  clientNom?: string;
+  vendorCompanyName?: string;
+  status?: OrderStatus;
+  items?: OrderItem[];
+  subtotal?: number;
+  taxAmount?: number;
+  discountAmount?: number;
+  totalAmount: number;
+  shippingAddress?: string;
+  notes?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface OrderItem {
+  id?: number;
+  productId: number;
+  productName?: string;
+  productReference?: string;
+  quantity: number;
+  unitPrice: number;
+  subtotal?: number;
+}
+
+export interface Notification {
+  id?: number;
+  vendorId: number;
+  type: NotificationType;
+  title: string;
+  message: string;
+  productId?: number;
+  productName?: string;
+  orderId?: number;
+  orderNumber?: string;
+  isRead?: boolean;
+  createdAt?: string;
+}
+
+export interface AdminDashboard {
+  totalVendors: number;
+  approvedVendors: number;
+  pendingVendors: number;
+  totalClients: number;
+  totalProducts: number;
+  totalCategories: number;
+}
+
+export interface VendorDashboard {
+  vendorId: number;
+  vendorName: string;
+  totalProducts: number;
+  lowStockProducts: number;
+  totalOrders: number;
+  totalRevenue: number;
+}
+
+export interface ClientProfile {
+  id?: number;
+  username: string;
+  email: string;
+  fullName: string;
+  registeredAt?: string;
+}
+
+export interface CartItem {
+  vendorId: number;
+  vendorName: string;
+  productId: number;
+  productName: string;
+  price: number;
+  quantity: number;
 }

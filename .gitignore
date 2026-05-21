@@ -1,0 +1,17 @@
+# Node
+node_modules/
+dist/
+
+# Maven / Spring Boot
+target/
+*.class
+
+# Logs
+*.log
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store

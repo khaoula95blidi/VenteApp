@@ -3,13 +3,13 @@ package com.venteapp.security;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtUtils {
@@ -29,6 +29,10 @@ public class JwtUtils {
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
+        List<String> authorities = userDetails.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.toList());
+        claims.put("authorities", authorities);
         return createToken(claims, userDetails.getUsername(), jwtExpiration);
     }
 
@@ -50,6 +54,18 @@ public class JwtUtils {
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public List<String> extractAuthorities(String token) {
+        return extractClaim(token, claims -> {
+            Object authoritiesObj = claims.get("authorities");
+            if (authoritiesObj instanceof List) {
+                return ((List<?>) authoritiesObj).stream()
+                    .map(Object::toString)
+                    .collect(Collectors.toList());
+            }
+            return new ArrayList<>();
+        });
     }
 
     public Date extractExpiration(String token) {

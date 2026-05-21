@@ -29,10 +29,23 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role = Role.ROLE_VENDEUR;
+    private Role role = Role.ROLE_CLIENT;
 
     @Column(nullable = false)
     private boolean enabled = true;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "vendor_status")
+    private VendorStatus vendorStatus;
+
+    @Column(name = "company_name", length = 255)
+    private String companyName;
+
+    @Column(name = "rejection_reason", columnDefinition = "TEXT")
+    private String rejectionReason;
+
+    @Column(name = "registered_at")
+    private LocalDateTime registeredAt;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -43,9 +56,14 @@ public class User {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+        registeredAt = LocalDateTime.now();
     }
 
     public enum Role {
-        ROLE_ADMIN, ROLE_MANAGER, ROLE_VENDEUR
+        ROLE_ADMIN, ROLE_VENDOR, ROLE_CLIENT
+    }
+
+    public enum VendorStatus {
+        PENDING, APPROVED, REJECTED
     }
 }

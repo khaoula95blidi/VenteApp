@@ -17,9 +17,9 @@ public class BusinessDTOs {
         private String description;
         @NotBlank private String reference;
         @NotNull @DecimalMin("0") private BigDecimal prix;
-        private BigDecimal prixAchat;
-        @Min(0) private Integer stock;
-        private Integer stockMinimum;
+        private BigDecimal prixAchat = BigDecimal.ZERO;
+        @Min(0) private Integer stock = 0;
+        private Integer stockMinimum = 5;
         private Long categorieId;
         private String categorieNom;
         private boolean actif;
@@ -106,5 +106,121 @@ public class BusinessDTOs {
         private int mois;
         private String nomMois;
         private BigDecimal total;
+    }
+
+    // ===== ORDER (MARKETPLACE) =====
+    @Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor
+    public static class OrderDTO {
+        private Long id;
+        private String orderNumber;
+        private Long clientId;
+        private String clientNom;
+        private Long vendorId;
+        private String vendorCompanyName;
+        private LocalDateTime orderDate;
+        private String status;
+        private List<OrderItemDTO> items;
+        private BigDecimal subtotal;
+        private BigDecimal taxAmount;
+        private BigDecimal discountAmount;
+        private BigDecimal totalAmount;
+        private String shippingAddress;
+        private String notes;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
+    }
+
+    @Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor
+    public static class OrderItemDTO {
+        private Long id;
+        private Long productId;
+        private String productName;
+        private String productReference;
+        @Min(1) private Integer quantity;
+        @NotNull @DecimalMin("0") private BigDecimal unitPrice;
+        private BigDecimal subtotal;
+    }
+
+    // ===== NOTIFICATION =====
+    @Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor
+    public static class NotificationDTO {
+        private Long id;
+        private Long vendorId;
+        private String type;
+        private String title;
+        private String message;
+        private Long productId;
+        private String productName;
+        private Long orderId;
+        private String orderNumber;
+        private Boolean isRead;
+        private LocalDateTime createdAt;
+    }
+
+    // ===== VENDOR =====
+    @Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor
+    public static class VendorDTO {
+        private Long id;
+        private String username;
+        @Email private String email;
+        private String fullName;
+        @NotBlank private String companyName;
+        private String vendorStatus;
+        private String rejectionReason;
+        private LocalDateTime registeredAt;
+        private int totalProducts;
+        private long totalOrders;
+        private BigDecimal totalRevenue;
+    }
+
+    @Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor
+    public static class VendorProfileDTO {
+        private Long id;
+        private String username;
+        @Email private String email;
+        private String fullName;
+        private String companyName;
+        private String vendorStatus;
+        private LocalDateTime registeredAt;
+    }
+
+    // ===== ADMIN DASHBOARD =====
+    @Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor
+    public static class AdminDashboardDTO {
+        private long totalVendors;
+        private long approvedVendors;
+        private long pendingVendors;
+        private long totalClients;
+        private long totalProducts;
+        private long totalCategories;
+        private long totalOrders;
+        private BigDecimal totalRevenue;
+    }
+
+    // ===== VENDOR DASHBOARD =====
+    @Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor
+    public static class VendorDashboardDTO {
+        private Long vendorId;
+        private String vendorName;
+        private long totalProducts;
+        private long lowStockProducts;
+        private long totalOrders;
+        private BigDecimal totalRevenue;
+    }
+
+    // ===== CLIENT PROFILE =====
+    @Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor
+    public static class ClientProfileDTO {
+        private Long id;
+        private String username;
+        @Email private String email;
+        private String fullName;
+        private LocalDateTime registeredAt;
+    }
+
+    @Getter @Setter
+    public static class ClientProfileUpdateDTO {
+        @Email private String email;
+        private String fullName;
     }
 }

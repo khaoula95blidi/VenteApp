@@ -45,9 +45,21 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                // Public endpoints - no authentication required
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/public/**").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
+
+                // ADMIN-only endpoints
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                // VENDOR-only endpoints (method-level security will enforce APPROVED status)
+                .requestMatchers("/api/vendor/**").hasRole("VENDOR")
+
+                // CLIENT-only endpoints
+                .requestMatchers("/api/client/**").hasRole("CLIENT")
+
+                // All authenticated endpoints (with method-level security for granularity)
                 .anyRequest().authenticated()
             )
             .headers(h -> h.frameOptions(f -> f.sameOrigin()))
@@ -91,7 +103,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+        ////config.setAllowedOrigins(Arrays.asList("http://localhost:4200","http://localhost:*"));
+        config.setAllowedOriginPatterns(Arrays.asList("http://localhost:*"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("*"));
         config.setExposedHeaders(Arrays.asList("Authorization"));

@@ -34,14 +34,20 @@ public class Produit {
 
     @Column(nullable = false)
     @Min(0)
+    @Builder.Default
     private Integer stock = 0;
 
     @Column(name = "stock_minimum")
+    @Builder.Default
     private Integer stockMinimum = 5;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categorie_id")
     private Categorie categorie;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vendor_id", nullable = false)
+    private User vendor;
 
     @Column(nullable = false)
     private boolean actif = true;
@@ -64,6 +70,7 @@ public class Produit {
     }
 
     public boolean isStockFaible() {
-        return stock <= stockMinimum;
+        Integer minimum = stockMinimum != null ? stockMinimum : 5;
+        return stock <= minimum;
     }
 }

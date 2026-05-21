@@ -3,7 +3,7 @@ import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
-import { AuthResponse, LoginRequest, RegisterRequest, CurrentUser } from '../models/models';
+import { AuthResponse, LoginRequest, RegisterRequest, CurrentUser, VendorRegisterRequest, ClientRegisterRequest, VendorStatus } from '../models/models';
 
 const API = 'http://localhost:8085/api';
 
@@ -28,11 +28,27 @@ export class AuthService {
     );
   }
 
+  registerVendor(req: VendorRegisterRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${API}/auth/register-vendor`, req).pipe(
+      tap(response => {
+        this.saveSession(response);
+      })
+    );
+  }
+
+  registerClient(req: ClientRegisterRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${API}/auth/register-client`, req).pipe(
+      tap(response => {
+        this.saveSession(response);
+      })
+    );
+  }
+
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
     this.currentUser.set(null);
-    this.router.navigate(['/auth/login']);
+    this.router.navigate(['/login']);
   }
 
   getToken(): string | null {
@@ -47,11 +63,20 @@ export class AuthService {
     return this.currentUser()?.role === role;
   }
 
+  getVendorStatus(): VendorStatus | undefined {
+    return this.currentUser()?.vendorStatus as VendorStatus;
+  }
+
   private saveSession(res: AuthResponse): void {
     localStorage.setItem(this.TOKEN_KEY, res.accessToken);
     const user: CurrentUser = {
-      username: res.username, email: res.email,
-      fullName: res.fullName, role: res.role, token: res.accessToken
+      username: res.username,
+      email: res.email,
+      fullName: res.fullName,
+      role: res.role,
+      token: res.accessToken,
+      vendorStatus: res.vendorStatus,
+      companyName: res.companyName
     };
     localStorage.setItem(this.USER_KEY, JSON.stringify(user));
     this.currentUser.set(user);

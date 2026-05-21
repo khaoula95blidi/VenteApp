@@ -22,4 +22,19 @@ public interface ProduitRepository extends JpaRepository<Produit, Long> {
 
     @Query("SELECT COUNT(p) FROM Produit p WHERE p.stock <= p.stockMinimum AND p.actif = true")
     long countStockFaible();
+
+    // Vendor-specific queries
+    List<Produit> findByVendorId(Long vendorId);
+
+    @Query("SELECT p FROM Produit p WHERE p.vendor.id = :vendorId AND p.actif = true")
+    List<Produit> findByVendorIdAndActifTrue(Long vendorId);
+
+    @Query("SELECT p FROM Produit p WHERE p.vendor.id = :vendorId AND p.stock <= p.stockMinimum AND p.actif = true")
+    List<Produit> findLowStockByVendor(Long vendorId);
+
+    @Query("SELECT COUNT(p) FROM Produit p WHERE p.vendor.id = :vendorId AND p.actif = true")
+    long countByVendorId(Long vendorId);
+
+    @Query("SELECT COUNT(p) FROM Produit p WHERE p.categorie.id = :categorieId")
+    long countByCategorieId(Long categorieId);
 }

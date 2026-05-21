@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../core/services/auth.service';
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-login',
@@ -45,7 +46,7 @@ import { AuthService } from '../../core/services/auth.service';
 
         <div style="text-align:center;margin-top:20px;font-size:13px;color:var(--text-muted)">
           Pas encore de compte ?
-          <a routerLink="/auth/register" style="color:var(--accent);font-weight:600;text-decoration:none;margin-left:4px">S'inscrire</a>
+          <a routerLink="/register" style="color:var(--accent);font-weight:600;text-decoration:none;margin-left:4px">S'inscrire</a>
         </div>
 
         <div style="margin-top:24px;padding:16px;background:var(--bg);border-radius:10px;font-size:12px;color:var(--text-muted)">
@@ -62,7 +63,12 @@ export class LoginComponent {
   error = signal('');
   showPwd = signal(false);
 
-  constructor(private fb: FormBuilder, private auth: AuthService, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private auth: AuthService,
+    private router: Router,
+    private toast: ToastService
+  ) {
     this.form = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
@@ -75,7 +81,26 @@ export class LoginComponent {
     this.error.set('');
 
     this.auth.login(this.form.value).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: (response) => {
+        this.loading.set(false);
+        const user = this.auth.currentUser();
+
+        // Role-based redirect
+        if (user?.role === 'ROLE_ADMIN') {
+          this.router.navigate(['/admin/dashboard']);
+        } else if (user?.role === 'ROLE_VENDOR') {
+          if (user?.vendorStatus === 'APPROVED') {
+            this.router.navigate(['/vendor/dashboard']);
+          } else if (user?.vendorStatus === 'PENDING') {
+            this.router.navigate(['/pending']);
+          } else {
+            // REJECTED vendor
+            this.error.set('Votre compte vendeur a été rejeté.');
+          }
+        } else if (user?.role === 'ROLE_CLIENT') {
+          this.router.navigate(['/client/home']);
+        }
+      },
       error: (err) => {
         this.error.set(err.error?.message || 'Identifiants incorrects');
         this.loading.set(false);

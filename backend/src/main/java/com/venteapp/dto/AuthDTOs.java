@@ -19,6 +19,23 @@ public class AuthDTOs {
         private String fullName;
     }
 
+    @Getter @Setter
+    public static class VendorRegisterRequest {
+        @NotBlank @Size(min=3, max=50) private String username;
+        @NotBlank @Email private String email;
+        @NotBlank @Size(min=6, max=100) private String password;
+        @NotBlank private String fullName;
+        @NotBlank private String companyName;
+    }
+
+    @Getter @Setter
+    public static class ClientRegisterRequest {
+        @NotBlank @Size(min=3, max=50) private String username;
+        @NotBlank @Email private String email;
+        @NotBlank @Size(min=6, max=100) private String password;
+        @NotBlank private String fullName;
+    }
+
     @Getter @Setter @Builder @AllArgsConstructor @NoArgsConstructor
     public static class AuthResponse {
         private String accessToken;
@@ -28,6 +45,8 @@ public class AuthDTOs {
         private String email;
         private String fullName;
         private String role;
+        private String vendorStatus;
+        private String companyName;
     }
 
     @Getter @Setter

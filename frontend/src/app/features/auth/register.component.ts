@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../core/services/auth.service';
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-register',
@@ -51,7 +52,7 @@ import { AuthService } from '../../core/services/auth.service';
 
         <div style="text-align:center;margin-top:20px;font-size:13px;color:var(--text-muted)">
           Déjà inscrit ?
-          <a routerLink="/auth/login" style="color:var(--accent);font-weight:600;text-decoration:none;margin-left:4px">Se connecter</a>
+          <a routerLink="/login" style="color:var(--accent);font-weight:600;text-decoration:none;margin-left:4px">Se connecter</a>
         </div>
       </div>
     </div>
@@ -62,7 +63,12 @@ export class RegisterComponent {
   loading = signal(false);
   error = signal('');
 
-  constructor(private fb: FormBuilder, private auth: AuthService, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private auth: AuthService,
+    private router: Router,
+    private toast: ToastService
+  ) {
     this.form = this.fb.group({
       fullName: [''],
       username: ['', [Validators.required, Validators.minLength(3)]],
@@ -77,7 +83,11 @@ export class RegisterComponent {
     this.error.set('');
 
     this.auth.register(this.form.value).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: () => {
+        this.loading.set(false);
+        this.toast.success('Compte créé avec succès, veuillez vous connecter');
+        this.router.navigate(['/login']);
+      },
       error: (err) => {
         this.error.set(err.error?.message || 'Erreur lors de l\'inscription');
         this.loading.set(false);
